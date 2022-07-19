@@ -1,11 +1,17 @@
 package models
 
-import "gorm.io/gorm"
+import (
+	"database/sql"
+
+	"gorm.io/gorm"
+)
 
 type Tx struct{
 	gorm.Model
-	User Users `json:"buyers" form:"buyers" xml:"buyers"`
+	UserID uint
+	User Users
 	TxBTC string `json:"txbtc" form:"txbtc" xml:"txbtc"`
-	Is_Valid bool `json:"is_valid" form:"is_valid" xml:"is_valid" gorm:"default:false"`
+	Is_Valid sql.NullBool `json:"is_valid" form:"is_valid" xml:"is_valid" gorm:"default:false"`
+	WhichStuffID uint
 	WhichStuff Stuff
 }

@@ -2,8 +2,10 @@ package main
 
 import (
 	"fmt"
+	"os"
 
 	"github.com/crownss/dark_market/config"
+	"github.com/crownss/dark_market/routers"
 	"github.com/joho/godotenv"
 )
 
@@ -13,6 +15,6 @@ func main(){
 		fmt.Println("Cannot load environment")
 	}
 	config.InitDB()
-	// e := routes.New()
-	// e.Start(":" + os.Getenv("PORT"))
+	e := routers.Router()
+	e.Run(":" + os.Getenv("PORT"))
 }
