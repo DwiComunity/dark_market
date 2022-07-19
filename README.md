@@ -11,8 +11,8 @@ SSLMODE=
 DBTIMEZONE=
 ```
 
-change transaction in [`models/tx.go`](https://github.com/crownss/dark_web/blob/master/models/tx.go)
+change transaction in [`models/tx.go`](https://github.com/Crownss/dark_market/blob/master/models/tx.go)
 default trasanction using BTC
 
-change users requirements in [`models/users.go`](https://github.com/crownss/dark_web/blob/master/models/users.go)
+change users requirements in [`models/users.go`](https://github.com/Crownss/dark_market/blob/master/models/users.go)
 default using username and password for decentralization and anonymity
