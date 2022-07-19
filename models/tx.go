@@ -6,6 +6,6 @@ type Tx struct{
 	gorm.Model
 	User Users `json:"buyers" form:"buyers" xml:"buyers"`
 	TxBTC string `json:"txbtc" form:"txbtc" xml:"txbtc"`
-	Admin Users `gorm:"check:Is_Admin <> true" json:"admin" form:"admin" xml:"admin"`
+	Is_Valid bool `json:"is_valid" form:"is_valid" xml:"is_valid" gorm:"default:false"`
 	WhichStuff Stuff
 }
