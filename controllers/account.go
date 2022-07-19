@@ -8,8 +8,9 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func GetAllStuff(c *gin.Context){
-	var allstuf []models.Stuff
+
+func GetAllAccount(c *gin.Context)  {
+	var allstuf []models.Users
 	getall := config.DB.Find(&allstuf).RowsAffected
 	if getall == 0{
 		c.JSON(http.StatusNotFound, models.Response{
@@ -19,7 +20,7 @@ func GetAllStuff(c *gin.Context){
 		})
 		return
 	}else if(getall != 0){
-		c.JSON(http.StatusOK, models.StuffResponseMany{
+		c.JSON(http.StatusOK, models.UsersResponseMany{
 			Code: http.StatusOK,
 			Message: "Data Found !",
 			Status: "success",
@@ -29,9 +30,9 @@ func GetAllStuff(c *gin.Context){
 	}
 }
 
-func GetStuffCode(c *gin.Context){
-	var getstuffcode models.Stuff
-	if err := config.DB.Where("code = ?", c.Param("code")).First(&getstuffcode).Error; err != nil{
+func GetAccountUsername(c *gin.Context){
+	var getaccountusername models.Users
+	if err := config.DB.Where("username = ?", c.Param("username")).First(&getaccountusername).Error; err != nil{
 		c.JSON(http.StatusNotFound, models.Response{
 			Code: http.StatusNotFound,
 			Message: "Data not found !",
@@ -39,16 +40,16 @@ func GetStuffCode(c *gin.Context){
 		})
 		return
 	}
-	c.JSON(http.StatusOK, models.StuffResponseAny{
+	c.JSON(http.StatusOK, models.UsersResponseAny{
 		Code: http.StatusOK,
 		Message: "Data Found !",
 		Status: "success",
-		Data: getstuffcode,
+		Data: getaccountusername,
 	})
 }
 
-func PostStuff(c *gin.Context){}
+func RegisterAccount(c *gin.Context){}
 
-func UpdateStuff(c *gin.Context){}
+func UpdatePassword(c *gin.Context){}
 
-func DeleteStuff(c *gin.Context){}
+func DeleteAccount(c *gin.Context){}
