@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"log"
 	"os"
 
 	"github.com/crownss/dark_market/config"
@@ -16,5 +17,10 @@ func main(){
 	}
 	config.InitDB()
 	e := routers.Router()
-	e.Run(":" + os.Getenv("PORT"))
+	log.Println("\n\n\t\t\tRemember !\n\tYOU ARE NOT REQUIRED TO FILL RUN_HOST OR RUN_PORT IN .env\n\tby the default it will be use http://localhost:8000\n\n\t")
+	if os.Getenv("RUN_HOST") != "" && os.Getenv("RUN_PORT") != ""{
+		e.Run(os.Getenv("RUN_HOST")+ ":" + os.Getenv("RUN_PORT"))
+	}
+	e.Run(":8000")
+
 }
