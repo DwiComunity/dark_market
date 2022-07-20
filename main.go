@@ -17,7 +17,6 @@ func main() {
 	Env(".env")
 	go func() { StartContainer(os.Getenv("CONTAINER_ID")) }()
 	time.Sleep(3 * time.Second)
-	StartContainer(os.Getenv("CONTAINER_ID"))
 	config.InitDB()
 	e := routers.Router()
 	log.Println("\n\n\t\t\tRemember !\n\tYOU ARE NOT REQUIRED TO FILL RUN_HOST OR RUN_PORT IN .env\n\tby the default it will be use http://localhost:8000\n\n\t")

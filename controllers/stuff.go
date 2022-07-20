@@ -1,7 +1,6 @@
 package controllers
 
 import (
-	"log"
 	"math/rand"
 	"net/http"
 	"time"
