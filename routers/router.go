@@ -32,6 +32,7 @@ func Router()*gin.Engine{
 		accounts.GET("/get/all", controllers.GetAllAccount)
 		accounts.GET("/get/:username", controllers.GetAccountUsername)
 		accounts.POST("/register", controllers.RegisterAccount)
+		accounts.POST("/login", controllers.LoginAccount)
 		accounts.PUT("/change-password", controllers.UpdatePassword)
 		accounts.DELETE("/delete/:username", controllers.DeleteAccount)
 	}
