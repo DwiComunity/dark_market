@@ -1,8 +1,6 @@
 package models
 
 import (
-	"database/sql"
-
 	"gorm.io/gorm"
 )
 
@@ -10,9 +8,9 @@ type Users struct {
 	gorm.Model
 	Username     string 		`json:"username" form:"username" xml:"username" gorm:"unique"`
 	Password     string 		`json:"password" form:"password" xml:"password"`
-	Is_Active    sql.NullBool   `json:"is_active" form:"is_active" xml:"is_active" gorm:"default:true"`
-	Is_Admin     sql.NullBool   `json:"is_admin" form:"is_admin" xml:"is_admin" gorm:"default:false"`
-	Is_SuperUser sql.NullBool   `json:"is_superuser" form:"is_superuser" xml:"is_superuser" gorm:"default:false"`
+	Is_Active    bool   `json:"is_active" form:"is_active" xml:"is_active" gorm:"default:true"`
+	Is_Admin     bool   `json:"is_admin" form:"is_admin" xml:"is_admin" gorm:"default:false"`
+	Is_SuperUser bool   `json:"is_superuser" form:"is_superuser" xml:"is_superuser" gorm:"default:false"`
 }
 
 type RequestUsersLogin struct {

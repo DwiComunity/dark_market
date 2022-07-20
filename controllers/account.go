@@ -4,8 +4,10 @@ import (
 	"net/http"
 
 	"github.com/crownss/dark_market/config"
+	"github.com/crownss/dark_market/helpers"
 	"github.com/crownss/dark_market/models"
 	"github.com/gin-gonic/gin"
+	"golang.org/x/crypto/bcrypt"
 )
 
 
@@ -48,7 +50,55 @@ func GetAccountUsername(c *gin.Context){
 	})
 }
 
-func RegisterAccount(c *gin.Context){}
+func RegisterAccount(c *gin.Context){
+	validate := helpers.InitValidator()
+	var request models.RequestUsersRegister
+	if eer := c.BindJSON(&request);eer != nil{
+		c.JSON(http.StatusBadRequest, models.Response{
+			Code:    http.StatusBadRequest,
+			Message: eer.Error(),
+			Status:  "error",
+		})
+		return
+	}
+	if err := validate.Struct(&request);err != nil {
+		errTranslated := helpers.TranslateError(err, validate)
+		c.JSON(http.StatusBadRequest, models.Response{
+			Code:    http.StatusBadRequest,
+			Message: errTranslated.Error(),
+			Status:  "error",
+		})
+		return
+	}
+	var UserInDB models.Users
+	UserInDB.Username = request.Username
+	query := config.DB.Where("username = ?", request.Username).Find(&UserInDB)
+	if query.RowsAffected != 0 {
+		c.JSON(http.StatusBadRequest, models.Response{
+			Code:    http.StatusBadRequest,
+			Message: "Username is already registered",
+			Status:  "error",
+		})
+		return
+	}
+	encrypt, _ := bcrypt.GenerateFromPassword([]byte(request.Password), 12)
+	UserInDB.Password = string(encrypt)
+	if e := config.DB.Save(&UserInDB).Error;e != nil {
+		c.JSON(http.StatusInternalServerError, models.Response{
+			Code:    http.StatusInternalServerError,
+			Message: e.Error(),
+			Status:  "error",
+		})
+		return
+	}
+	c.JSON(http.StatusOK, models.Response{
+		Code:    http.StatusOK,
+		Message: "Succesfuly register with username: "+request.Username,
+		Status:  "Success",
+	})
+}
+
+func LoginAccount(c *gin.Context){}
 
 func UpdatePassword(c *gin.Context){}
 
