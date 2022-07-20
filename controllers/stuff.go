@@ -1,7 +1,6 @@
 package controllers
 
 import (
-	"log"
 	"math/rand"
 	"net/http"
 	"time"
@@ -69,7 +68,6 @@ func PostStuff(c *gin.Context){
 		return
 	}
 	rand.Seed(time.Now().UnixNano())
-	log.Println(input.Img)
 	res := models.Stuff{
 		Code:	_RandomString(5),
 		Img:	input.Img,
