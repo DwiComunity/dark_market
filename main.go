@@ -16,7 +16,7 @@ import (
 func main() {
 	Env(".env")
 	go func() { StartContainer(os.Getenv("CONTAINER_ID")) }()
-	time.Sleep(3 * time.Second)
+	time.Sleep(5 * time.Second)
 	config.InitDB()
 	e := routers.Router()
 	log.Println("\n\n\t\t\tRemember !\n\tYOU ARE NOT REQUIRED TO FILL RUN_HOST OR RUN_PORT IN .env\n\tby the default it will be use http://localhost:8000\n\n\t")
@@ -44,13 +44,3 @@ func StartContainer(s string) (string, error) {
 	log.Println("container starting with id:", s)
 	return s, nil
 }
-
-// func StopContainer(s string) {
-// 	cli, err := client.NewEnvClient()
-// 	if err != nil {
-// 		log.Fatal(err.Error())
-// 	}
-// 	if err := cli.ContainerStop(context.Background(), s, nil); err != nil {
-// 		log.Fatal(err.Error())
-// 	}
-// }

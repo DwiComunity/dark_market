@@ -1,6 +1,7 @@
 package controllers
 
 import (
+	"fmt"
 	"net/http"
 
 	"github.com/crownss/dark_market/config"
@@ -14,21 +15,43 @@ import (
 const userkey = "username"
 
 func GetAllAccount(c *gin.Context) {
-	var allstuf []models.Users
-	getall := config.DB.Find(&allstuf).RowsAffected
-	if getall == 0 {
-		c.JSON(http.StatusNotFound, models.Response{
-			Code:    http.StatusNotFound,
-			Message: "Data not found !",
+	var UserInDB models.Users
+	session := sessions.Default(c)
+	user := session.Get(userkey)
+	check_admin := config.DB.Where("username = ?", user).Where("is_admin = ?", true).Find(&UserInDB).RowsAffected
+	check_user := config.DB.Where("username = ?", user).Where("is_active = ?", true).Where("is_admin = ?", false).Find(&UserInDB).RowsAffected
+	if check_admin != 0 {
+		var allAccount []models.Users
+		getall := config.DB.Find(&allAccount).RowsAffected
+		if getall == 0 {
+			c.JSON(http.StatusNotFound, models.Response{
+				Code:    http.StatusNotFound,
+				Message: "Data not found !",
+				Status:  "error",
+			})
+			return
+		} else if getall != 0 {
+			c.JSON(http.StatusOK, models.UsersResponseMany{
+				Code:    http.StatusOK,
+				Message: "Data Found !",
+				Status:  "success",
+				Data:    allAccount,
+			})
+			return
+		}
+	}
+	if check_user != 0 {
+		c.JSON(http.StatusForbidden, models.Response{
+			Code:    http.StatusForbidden,
+			Message: "You not have access",
 			Status:  "error",
 		})
 		return
-	} else if getall != 0 {
-		c.JSON(http.StatusOK, models.UsersResponseMany{
-			Code:    http.StatusOK,
-			Message: "Data Found !",
-			Status:  "success",
-			Data:    allstuf,
+	} else if check_user == 0 {
+		c.JSON(http.StatusBadRequest, models.Response{
+			Code:    http.StatusBadRequest,
+			Message: "You are not logged in",
+			Status:  "error",
 		})
 		return
 	}
@@ -36,19 +59,26 @@ func GetAllAccount(c *gin.Context) {
 
 func GetAccountUsername(c *gin.Context) {
 	var getaccountusername models.Users
-	if err := config.DB.Where("username = ?", c.Param("username")).First(&getaccountusername).Error; err != nil {
+	// var getusernameonly models.UserGetUsername
+
+	if err := config.DB.Where("username = ?", c.Param("username")).First(&getaccountusername).Error; err != nil{
 		c.JSON(http.StatusNotFound, models.Response{
 			Code:    http.StatusNotFound,
-			Message: "Data not found !",
+			Message: err.Error(),
 			Status:  "error",
 		})
 		return
 	}
-	c.JSON(http.StatusOK, models.UsersResponseAny{
+	get1 := make(map[string]interface{})
+	get1["username"] = getaccountusername.Username
+	get1["is_active"] = getaccountusername.Is_Active
+	get1["is_admin"] = getaccountusername.Is_Admin
+	fmt.Println(get1)
+	c.JSON(http.StatusOK, models.UsersUsernameResponseAny{
 		Code:    http.StatusOK,
 		Message: "Data Found !",
 		Status:  "success",
-		Data:    getaccountusername,
+		Data:    get1,
 	})
 }
 
@@ -150,7 +180,7 @@ func LoginAccount(c *gin.Context) {
 	if e := session.Save(); e != nil {
 		c.JSON(http.StatusInternalServerError, models.Response{
 			Code:    http.StatusInternalServerError,
-			Message: "Failed to save session",
+			Message: e.Error(),
 			Status:  "error",
 		})
 		return
@@ -212,4 +242,43 @@ func LogoutAccount(c *gin.Context) {
 
 func UpdatePassword(c *gin.Context) {}
 
-func DeleteAccount(c *gin.Context) {}
+func DeleteAccount(c *gin.Context) {
+	var UserInDB models.Users
+	session := sessions.Default(c)
+	user := session.Get(userkey)
+	check_superuser := config.DB.Where("username = ?", user).Where("is_admin = ?", true).Where("is_superuser = ?",true).Find(&UserInDB).RowsAffected
+	check_user := config.DB.Where("username = ?", user).Where("is_active = ?", true).Where("is_admin = ?", false).Find(&UserInDB).RowsAffected
+	if check_superuser != 0 {
+		var getUsername models.Users
+		if err := config.DB.Where("code = ?", c.Param("code")).First(&getUsername).Error; err != nil {
+			c.JSON(http.StatusNotFound, models.Response{
+				Code:    http.StatusNotFound,
+				Message: err.Error(),
+				Status:  "error",
+			})
+			return
+		}
+		config.DB.Delete(&getUsername)
+		c.JSON(http.StatusOK, models.Response{
+			Code:    http.StatusOK,
+			Message: "Succesfuly Delete",
+			Status:  "success",
+		})
+		return
+	}
+	if check_user != 0 {
+		c.JSON(http.StatusForbidden, models.Response{
+			Code:    http.StatusForbidden,
+			Message: "You not have access",
+			Status:  "error",
+		})
+		return
+	} else if check_user == 0 {
+		c.JSON(http.StatusBadRequest, models.Response{
+			Code:    http.StatusBadRequest,
+			Message: "You are not logged in",
+			Status:  "error",
+		})
+		return
+	}
+}
