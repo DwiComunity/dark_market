@@ -35,12 +35,12 @@ func Env(file string) error {
 	return env
 }
 
-func StartContainer(s string) (string, error) {
+func StartContainer(s string) string {
 	cli, err := client.NewEnvClient()
 	if err != nil {
 		log.Fatal(err.Error())
 	}
 	cli.ContainerStart(context.Background(), s, types.ContainerStartOptions{})
 	log.Println("container starting with id:", s)
-	return s, nil
+	return s
 }

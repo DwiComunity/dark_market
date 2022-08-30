@@ -3,18 +3,18 @@ package routers
 import (
 	"os"
 
+	"github.com/crownss/dark_market/controllers"
 	"github.com/gin-contrib/cors"
 	"github.com/gin-contrib/sessions"
 	"github.com/gin-contrib/sessions/cookie"
 	"github.com/gin-gonic/gin"
-	"github.com/crownss/dark_market/controllers"
 )
 
-func Router()*gin.Engine{
-	r:= gin.Default()
+func Router() *gin.Engine {
+	r := gin.Default()
 	store := cookie.NewStore([]byte(os.Getenv("SECRET_KEY")))
 	// r.Use(sessions.Sessions("session", store))
-	store.Options(sessions.Options{MaxAge:60*60*24}) //expired in a day
+	store.Options(sessions.Options{MaxAge: 60 * 60 * 24}) //expired in a day
 	r.Use(cors.Default())
 	stuff := r.Group("/marketplace")
 	stuff.Use(sessions.Sessions("Token", store))
@@ -36,6 +36,7 @@ func Router()*gin.Engine{
 		accounts.POST("/login", controllers.LoginAccount)
 		accounts.POST("/logout", controllers.LogoutAccount)
 		accounts.PUT("/change-password", controllers.UpdatePassword)
+		accounts.PUT("/inactive/:username", controllers.InactiveAccount)
 		accounts.DELETE("/delete/:username", controllers.DeleteAccount)
 	}
 	return r
