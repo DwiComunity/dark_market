@@ -28,15 +28,19 @@ func main() {
 }
 
 func Env(file string) error {
-	env := godotenv.Load(file);if env != nil {
+	env := godotenv.Load(file)
+	if env != nil {
 		log.Fatal("cannot load env file with error:\n", env.Error())
 	}
 	return env
 }
 
-func StartContainer(s string) (string, error) {
-	cli, err := client.NewEnvClient();if err != nil {log.Fatal(err.Error())}
+func StartContainer(s string) string {
+	cli, err := client.NewEnvClient()
+	if err != nil {
+		log.Fatal(err.Error())
+	}
 	cli.ContainerStart(context.Background(), s, types.ContainerStartOptions{})
 	log.Println("container starting with id:", s)
-	return s, nil
+	return s
 }
