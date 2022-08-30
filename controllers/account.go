@@ -61,7 +61,7 @@ func GetAccountUsername(c *gin.Context) {
 	var getaccountusername models.Users
 	// var getusernameonly models.UserGetUsername
 
-	if err := config.DB.Where("username = ?", c.Param("username")).First(&getaccountusername).Error; err != nil{
+	if err := config.DB.Where("username = ?", c.Param("username")).First(&getaccountusername).Error; err != nil {
 		c.JSON(http.StatusNotFound, models.Response{
 			Code:    http.StatusNotFound,
 			Message: err.Error(),
@@ -197,20 +197,20 @@ func TesUser(c *gin.Context) {
 	var UserInDB models.Users
 	session := sessions.Default(c)
 	user := session.Get(userkey)
-	check_admin := config.DB.Where("username = ?", user).Where("is_admin = ?",true).Find(&UserInDB).RowsAffected
-	check_user := config.DB.Where("username = ?", user).Where("is_active = ?",true).Where("is_admin = ?",false).Find(&UserInDB).RowsAffected
-	if check_admin != 0{
-		c.JSON(http.StatusOK, gin.H{"username": user, "is_admin": true, "is_superuser":true, "is_active":true})
+	check_admin := config.DB.Where("username = ?", user).Where("is_admin = ?", true).Find(&UserInDB).RowsAffected
+	check_user := config.DB.Where("username = ?", user).Where("is_active = ?", true).Where("is_admin = ?", false).Find(&UserInDB).RowsAffected
+	if check_admin != 0 {
+		c.JSON(http.StatusOK, gin.H{"username": user, "is_admin": true, "is_superuser": true, "is_active": true})
 		return
 	}
-	if check_user != 0{
-		c.JSON(http.StatusOK, gin.H{"username": user, "is_admin": false, "is_superuser":false, "is_active":true})
+	if check_user != 0 {
+		c.JSON(http.StatusOK, gin.H{"username": user, "is_admin": false, "is_superuser": false, "is_active": true})
 		return
-	}else if check_user == 0{
-		c.JSON(http.StatusOK, gin.H{"message":"user not found"})
+	} else if check_user == 0 {
+		c.JSON(http.StatusOK, gin.H{"message": "user not found"})
 		return
 	}
-	
+
 }
 
 func LogoutAccount(c *gin.Context) {
@@ -240,13 +240,78 @@ func LogoutAccount(c *gin.Context) {
 	})
 }
 
-func UpdatePassword(c *gin.Context) {}
+func UpdatePassword(c *gin.Context) {
+	var UserInDB models.Users
+	session := sessions.Default(c)
+	user := session.Get(userkey)
+	var inputPassword models.RequestUsersChangePassword
+	if user == nil {
+		c.JSON(http.StatusBadRequest, models.Response{
+			Code:    http.StatusBadRequest,
+			Message: "Bad session",
+			Status:  "error",
+		})
+		return
+	}
+	query := config.DB.Where("username = ?", user).Find(&UserInDB)
+	if query.Error != nil {
+		c.JSON(http.StatusInternalServerError, models.Response{
+			Code:    http.StatusInternalServerError,
+			Message: query.Error.Error(),
+			Status:  "error",
+		})
+		return
+	}
+	if query.RowsAffected == 0 {
+		c.JSON(http.StatusBadRequest, models.Response{
+			Code:    http.StatusBadRequest,
+			Message: "Username is not registered",
+			Status:  "error",
+		})
+		return
+	}
+	check := bcrypt.CompareHashAndPassword([]byte(UserInDB.Password), []byte(inputPassword.Old_password))
+	if check != nil {
+		c.JSON(http.StatusBadRequest, models.Response{
+			Code:    http.StatusBadRequest,
+			Message: "Incorrect password",
+			Status:  "error",
+		})
+		return
+	}
+	if err := c.Bind(&inputPassword); err != nil {
+		c.JSON(http.StatusBadRequest, models.Response{
+			Code:    http.StatusBadRequest,
+			Message: err.Error(),
+			Status:  "error",
+		})
+		return
+	}
+	update := make(map[string]interface{})
+	update["old_password"] = inputPassword.Old_password
+	update["new_password"] = inputPassword.New_password
+	update["confirm_new_password"] = inputPassword.Confirm_new_password
+
+	if err := config.DB.Where("username = ?", user).First(&UserInDB).Updates(update).Error; err != nil {
+		c.JSON(http.StatusNotFound, &models.Response{
+			Code:    http.StatusNotFound,
+			Message: err.Error(),
+			Status:  "error",
+		})
+		return
+	}
+	c.JSON(http.StatusAccepted, &models.Response{
+		Code:    http.StatusAccepted,
+		Message: "Succesfuly Change",
+		Status:  "success",
+	})
+}
 
 func DeleteAccount(c *gin.Context) {
 	var UserInDB models.Users
 	session := sessions.Default(c)
 	user := session.Get(userkey)
-	check_superuser := config.DB.Where("username = ?", user).Where("is_admin = ?", true).Where("is_superuser = ?",true).Find(&UserInDB).RowsAffected
+	check_superuser := config.DB.Where("username = ?", user).Where("is_admin = ?", true).Where("is_superuser = ?", true).Find(&UserInDB).RowsAffected
 	check_user := config.DB.Where("username = ?", user).Where("is_active = ?", true).Where("is_admin = ?", false).Find(&UserInDB).RowsAffected
 	if check_superuser != 0 {
 		var getUsername models.Users
