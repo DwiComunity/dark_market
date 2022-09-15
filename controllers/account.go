@@ -307,11 +307,52 @@ func UpdatePassword(c *gin.Context) {
 	})
 }
 
-func InactiveAccount(c *gin.Context){
+func UpdateAdmin(c *gin.Context) {
 	var UserInDB models.Users
 	session := sessions.Default(c)
 	user := session.Get(userkey)
-	check_superuser := config.DB.Where("username = ?", user).Where("is_admin = ?", true).Where("is_superuser = ?", true).Find(&UserInDB).RowsAffected
+	check_superuser := config.DB.Where("username = ?", user).Where("is_admin = ?", true).Where("is_super_user = ?", true).Find(&UserInDB).RowsAffected
+	check_user := config.DB.Where("username = ?", user).Where("is_active = ?", true).Where("is_admin = ?", false).Find(&UserInDB).RowsAffected
+	if check_superuser != 0 {
+		var getUsername models.Users
+		if err := config.DB.Where("username = ?", c.Param("username")).First(&getUsername).Update("is_admin", true).Error; err != nil {
+			c.JSON(http.StatusBadRequest, models.Response{
+				Code:    http.StatusBadRequest,
+				Message: err.Error(),
+				Status:  "error",
+			})
+			return
+		}
+		c.JSON(http.StatusOK, models.Response{
+			Code:    http.StatusOK,
+			Message: "Succesfully Update Admin",
+			Status:  "success",
+		})
+		return
+	}
+	if check_user != 0 {
+		c.JSON(http.StatusForbidden, models.Response{
+			Code:    http.StatusForbidden,
+			Message: "You not have access",
+			Status:  "error",
+		})
+		return
+	} else if check_user == 0 {
+		c.JSON(http.StatusBadRequest, models.Response{
+			Code:    http.StatusBadRequest,
+			Message: "You are not logged in",
+			Status:  "error",
+		})
+		return
+	}
+}
+
+func InactiveAccount(c *gin.Context) {
+	var UserInDB models.Users
+	session := sessions.Default(c)
+	user := session.Get(userkey)
+	check_superuser := config.DB.Where("username = ?", user).Where("is_admin = ?", true).Where("is_super_user = ?", true).Find(&UserInDB).RowsAffected
+	fmt.Println(check_superuser)
 	check_user := config.DB.Where("username = ?", user).Where("is_active = ?", true).Where("is_admin = ?", false).Find(&UserInDB).RowsAffected
 	if check_superuser != 0 {
 		var getUsername models.Users
@@ -325,7 +366,48 @@ func InactiveAccount(c *gin.Context){
 		}
 		c.JSON(http.StatusOK, models.Response{
 			Code:    http.StatusOK,
-			Message: "Succesfuly Inactive",
+			Message: "Succesfully Inactived Users",
+			Status:  "success",
+		})
+		return
+	}
+	if check_user != 0 {
+		c.JSON(http.StatusForbidden, models.Response{
+			Code:    http.StatusForbidden,
+			Message: "You not have access",
+			Status:  "error",
+		})
+		return
+	} else if check_user == 0 {
+		c.JSON(http.StatusBadRequest, models.Response{
+			Code:    http.StatusBadRequest,
+			Message: "You are not logged in",
+			Status:  "error",
+		})
+		return
+	}
+}
+
+func ActivateAccount(c *gin.Context) {
+	var UserInDB models.Users
+	session := sessions.Default(c)
+	user := session.Get(userkey)
+	check_superuser := config.DB.Where("username = ?", user).Where("is_admin = ?", true).Where("is_super_user = ?", true).Find(&UserInDB).RowsAffected
+	fmt.Println(check_superuser)
+	check_user := config.DB.Where("username = ?", user).Where("is_active = ?", true).Where("is_admin = ?", false).Find(&UserInDB).RowsAffected
+	if check_superuser != 0 {
+		var getUsername models.Users
+		if err := config.DB.Where("username = ?", c.Param("username")).First(&getUsername).Update("is_active", true).Error; err != nil {
+			c.JSON(http.StatusBadRequest, models.Response{
+				Code:    http.StatusBadRequest,
+				Message: err.Error(),
+				Status:  "error",
+			})
+			return
+		}
+		c.JSON(http.StatusOK, models.Response{
+			Code:    http.StatusOK,
+			Message: "Succesfully Activate users",
 			Status:  "success",
 		})
 		return
@@ -351,7 +433,7 @@ func DeleteAccount(c *gin.Context) {
 	var UserInDB models.Users
 	session := sessions.Default(c)
 	user := session.Get(userkey)
-	check_superuser := config.DB.Where("username = ?", user).Where("is_admin = ?", true).Where("is_superuser = ?", true).Find(&UserInDB).RowsAffected
+	check_superuser := config.DB.Where("username = ?", user).Where("is_admin = ?", true).Where("is_super_user = ?", true).Find(&UserInDB).RowsAffected
 	check_user := config.DB.Where("username = ?", user).Where("is_active = ?", true).Where("is_admin = ?", false).Find(&UserInDB).RowsAffected
 	if check_superuser != 0 {
 		var getUsername models.Users
@@ -366,7 +448,7 @@ func DeleteAccount(c *gin.Context) {
 		config.DB.Delete(&getUsername)
 		c.JSON(http.StatusOK, models.Response{
 			Code:    http.StatusOK,
-			Message: "Succesfuly Delete",
+			Message: "Succesfully Deleted",
 			Status:  "success",
 		})
 		return

@@ -1,6 +1,7 @@
 package controllers
 
 import (
+	"fmt"
 	"math/rand"
 	"net/http"
 	"time"
@@ -63,6 +64,7 @@ func PostStuff(c *gin.Context) {
 	session := sessions.Default(c)
 	user := session.Get(userkey)
 	check_admin := config.DB.Where("username = ?", user).Where("is_admin = ?", true).Find(&UserInDB).RowsAffected
+	fmt.Println(user, check_admin)
 	check_user := config.DB.Where("username = ?", user).Where("is_active = ?", true).Where("is_admin = ?", false).Find(&UserInDB).RowsAffected
 	if check_admin != 0 {
 		var input models.Stuff

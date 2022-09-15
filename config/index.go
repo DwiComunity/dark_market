@@ -11,7 +11,7 @@ import (
 
 var DB *gorm.DB
 
-func InitDB()*gorm.DB{
+func InitDB() *gorm.DB {
 	DBUSER := os.Getenv("DBUSER")
 	DBPASSWORD := os.Getenv("DBPASSWORD")
 	DBNAME := os.Getenv("DBNAME")
