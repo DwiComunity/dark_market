@@ -17,7 +17,7 @@ func Router() *gin.Engine {
 	store.Options(sessions.Options{MaxAge: 60 * 60 * 24}) //expired in a day
 	r.Use(cors.Default())
 	stuff := r.Group("/marketplace")
-	stuff.Use(sessions.Sessions("Token", store))
+	stuff.Use(sessions.Sessions("Bearer", store))
 	{
 		stuff.GET("/", controllers.GetAllStuff)
 		stuff.GET("/:code", controllers.GetStuffCode)
@@ -27,7 +27,7 @@ func Router() *gin.Engine {
 		stuff.DELETE("/delete/:code", controllers.DeleteStuff)
 	}
 	accounts := r.Group("/accounts")
-	accounts.Use(sessions.Sessions("Token", store))
+	accounts.Use(sessions.Sessions("Bearer", store))
 	{
 		accounts.GET("/get/all", controllers.GetAllAccount)
 		accounts.GET("/get/:username", controllers.GetAccountUsername)
@@ -37,6 +37,7 @@ func Router() *gin.Engine {
 		accounts.POST("/logout", controllers.LogoutAccount)
 		accounts.PUT("/change-password", controllers.UpdatePassword)
 		accounts.PUT("/inactive/:username", controllers.InactiveAccount)
+		accounts.PUT("/activate/:username", controllers.ActivateAccount)
 		accounts.DELETE("/delete/:username", controllers.DeleteAccount)
 	}
 	return r
