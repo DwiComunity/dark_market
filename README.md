@@ -4,7 +4,7 @@
 
 <p align="center"><img src="https://github.com/Crownss/dark_market/blob/master/img/dark_market.jpg" width="400px" alt="dark market" /></p>
 
-## ⚠️ This project will be use web3.0 in future for default transaction use XMR(MONERO) or BTC(bitcoin) not use manually transaction anymore just connect to your ledger or wallet then you can shop using your own money in your ledger or wallet ⚠️
+## ⚠️ This project will be use web3.0 in future for default transaction use XMR(monero) or BTC(bitcoin) not use manually transaction anymore just connect to your ledger or wallet then you can shop using your own money in your ledger or wallet ⚠️
 
 ## 🛠️ Installation Steps
 
