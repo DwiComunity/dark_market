@@ -7,10 +7,11 @@ import (
 	"github.com/crownss/dark_market/config"
 	"github.com/crownss/dark_market/helpers"
 	"github.com/crownss/dark_market/routers"
+	"github.com/gin-gonic/gin"
 )
 
 func main() {
-	//gin.SetMode(gin.ReleaseMode) //uncomment for release mode
+	gin.SetMode(gin.ReleaseMode) //uncomment for release mode
 	helpers.Env(".env")
 	helpers.WG.Add(2)
 	go helpers.StartContainer(os.Getenv("CONTAINER_ID"))
