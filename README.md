@@ -2,7 +2,7 @@
   Dark Market using Go and Gin-Gonic framework
 </h1>
 
-<p align="center"><img src="https://github.com/Crownss/dark_market/blob/master/img/dark_market.jpg" width="300px" alt="dark market" /></p>
+<p align="center"><img src="https://github.com/Crownss/dark_market/blob/master/img/dark_market.jpg" width="400px" alt="dark market" /></p>
 
 
 ## 🛠️ Installation Steps
