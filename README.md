@@ -4,6 +4,7 @@
 
 <p align="center"><img src="https://github.com/Crownss/dark_market/blob/master/img/dark_market.jpg" width="400px" alt="dark market" /></p>
 
+## ⚠️ This project will be use web3.0 in future for default transaction use MKR(MAKER) or BTC(bitcoin) not use manually transaction anymore just connect to your ledger or wallet then you can shop using your own money in your ledger or wallet ⚠️
 
 ## 🛠️ Installation Steps
 
@@ -53,6 +54,8 @@ SECRET_KEY=
 ```
 package main;import("fmt";"time";"math/rand");var letters=[]rune("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890");func randSeq(n int)string{b:=make([]rune, n);for i:=range b{b[i]=letters[rand.Intn(len(letters))]};return string(b)};func main(){rand.Seed(time.Now().UnixNano());fmt.Println(randSeq(6))}
 ```
+-   Comment in main.go at line 17 if you're not use database in container/docker and change ```helpers.WG.Add(2)``` to ```helpers.WG.Add(1)``` at line 16
+
 
 change transaction in [`models/tx.go`](https://github.com/Crownss/dark_market/blob/master/models/tx.go)
 default trasanction using BTC
